@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Money Cycle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/lucide-icon@0.4.0/dist/umd/lucide-icon.min.js" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Prevent zooming -->
+    <script>
+        window.addEventListener("wheel", (e)=> {
+            const isPinching = e.ctrlKey
+            if(isPinching) e.preventDefault()
+        }, { passive: false })
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <div id="app" class="h-screen flex flex-col">
+        <!-- App Content (Initially showing onboarding) -->
+        <div id="content" class="flex-1 overflow-y-auto">
+            <!-- Initial screen will be onboarding -->
+            <div id="onboarding-screen" class="h-full flex flex-col items-center justify-center px-6">
+                <div class="logo-container mb-10 animate-fade-in">
+                    <svg id="app-logo" class="w-24 h-24" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#000" stroke-width="2"></circle>
+                        <path d="M30,50 C30,40 40,30 50,30 C60,30 70,40 70,50 C70,60 60,70 50,70 C40,70 30,60 30,50 Z" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="180" stroke-dashoffset="180" class="animate-draw"></path>
+                        <text x="50" y="54" text-anchor="middle" font-family="sans-serif" font-size="12" class="font-geist-mono">$</text>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold mb-2 font-geist-mono animate-fade-in-delay-1">Money Cycle</h1>
+                <p class="text-gray-600 mb-8 text-center animate-fade-in-delay-2">Turn your recyclables into rewards</p>
+                <button id="start-button" class="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition animate-fade-in-delay-3">Get Started</button>
+            </div>
+
+            <!-- Home screen (initially hidden) -->
+            <div id="home-screen" class="hidden">
+                <div class="px-6 pt-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-xl font-bold font-geist-mono">Money Cycle</h1>
+                        <div class="notification-bell">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Points Banner -->
+                    <div class="bg-black text-white rounded-xl p-6 mb-6 shadow-sm">
+                        <p class="text-gray-400 text-sm mb-1">Available Balance</p>
+                        <div class="flex items-baseline">
+                            <h2 class="text-4xl font-bold font-geist-mono">1,250</h2>
+                            <span class="ml-1 text-gray-400">points</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-800 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span>Next reward at</span>
+                                <div class="flex items-center">
+                                    <span class="font-bold">1,500 points</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="mt-2 bg-gray-800 rounded-full h-1.5 w-full">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 83%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Environmental Impact -->
+                    <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+                        <h3 class="text-sm text-gray-500 mb-1">Today's Impact</h3>
+                        <div class="flex items-center">
+                            <div class="mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 22c1.25-4.67 6.83-8.29 10-9.15"/>
+                                    <path d="M18 10.7c-1.87 0-3.4-1.5-3.4-3.4 0-1.86 1.53-3.39 3.4-3.39 1.87 0 3.4 1.53 3.4 3.4 0 .55-.13 1.06-.37 1.5a3.4 3.4 0 0 1-3.03 1.9Z"/>
+                                    <path d="M16.24 12.76c-1.1.71-1.92 1.8-2.32 3.1"/>
+                                    <path d="M21.93 13.17c1.23.7 2.04 2.04 2.07 3.6"/> 
+                                    <path d="M7 14c-1.87 0-3.4-1.5-3.4-3.4 0-1.86 1.53-3.39 3.4-3.39 1.87 0 3.4 1.53 3.4 3.4 0 .55-.13 1.06-.37 1.5a3.4 3.4 0 0 1-3.03 1.9Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold">0.8 kg CO₂</h2>
+                                <p class="text-gray-500 text-sm">saved from 3 items</p>
+                            </div>
+                        </div>
+                    </div>
+                  
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button class="action-btn find-kiosk bg-white border border-gray-200 rounded-xl p-5 flex flex-col items-center">
+                            <div class="icon-container mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                                </svg>
+                            </div>
+                            <span class="text-sm">Find Kiosk</span>
+                        </button>
+
+                        <button class="action-btn scan-recycle bg-white border border-gray-200 rounded-xl p-5 flex flex-col items-center">
+                            <div class="icon-container mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                                    <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                                    <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                                    <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                    <path d="M9 9h.01"></path>
+                                    <path d="M15 9h.01"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm">Scan & Recycle</span>
+                        </button>
+
+                        <button class="action-btn rewards bg-white border border-gray-200 rounded-xl p-5 flex flex-col items-center">
+                            <div class="icon-container mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v7"></path>
+                                    <path d="m4.93 10.93 1.41 1.41"></path>
+                                    <path d="M2 18h2"></path>
+                                    <path d="M20 18h2"></path>
+                                    <path d="m19.07 10.93-1.41 1.41"></path>
+                                    <path d="M22 22H2"></path>
+                                    <path d="M16 7h0a4 4 0 0 0-8 0h0"></path>
+                                    <path d="M12 9v2"></path>
+                                    <path d="m8 14 1 2 3-2 3 2 1-2"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm">Rewards</span>
+                        </button>
+
+                        <button class="action-btn profile bg-white border border-gray-200 rounded-xl p-5 flex flex-col items-center">
+                            <div class="icon-container mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <span class="text-sm">Profile</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Activity Feed -->
+                    <div class="mb-8">
+                        <h3 class="text-sm font-medium mb-4">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center">
+                                        <div class="mr-3 p-2 bg-gray-100 rounded-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Recycled Battery
+                                            <p class="text-xs text-gray-500">Today, 10:42 AM</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-medium text-green-600">+5 pts</span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center">
+                                        <div class="mr-3 p-2 bg-gray-100 rounded-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5.5 8.5 9 12l-1.5 1.5"></path>
+                                                <path d="M3 6v-2a2 2 0 0 1 2-2h2"></path>
+                                                <path d="M11 2h2a2 2 0 0 1 2 2v2"></path>
+                                                <path d="M17 8.5 13.5 12l1.5 1.5"></path>
+                                                <path d="M19 6v-2a2 2 0 0 0-2-2h-2"></path>
+                                                <path d="M11 22h2a2 2 0 0 0 2-2v-2"></path>
+                                                <path d="M11 14l1-2"></path>
+                                                <path d="M10 16.5v2.9"></path>
+                                                <path d="M14 16.5v2.9"></path>
+                                                <path d="M12 16a4 4 0 0 0 4-4v-4"></path>
+                                                <path d="M8 12a4 4 0 0 0 4 4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Recycled Laptop</p>
+                                            <p class="text-xs text-gray-500">Today, 9:15 AM</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-medium text-green-600">+25 pts</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center">
+                                        <div class="mr-3 p-2 bg-gray-100 rounded-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                                <rect x="2" y="8" width="20" height="8" rx="1"></rect>
+                                                <path d="M6 4v4"></path>
+                                                <path d="M18 4v4"></path>
+                                                <path d="M10 16v4"></path>
+                                                <path d="M14 16v4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Recycled Monitor</p>
+                                            <p class="text-xs text-gray-500">Yesterday, 4:30 PM</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-medium text-green-600">+30 pts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiosk Finder Screen (initially hidden) -->
+            <div id="kiosk-finder-screen" class="hidden h-full flex flex-col">
+                <div class="p-4 border-b border-gray-200 flex items-center">
+                    <button id="back-from-kiosk" class="mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m15 18-6-6 6-6"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-lg font-medium">Find Recycling Kiosks</h2>
+                </div>
+                <div class="flex-1 relative">
+                    <div id="map-container" class="h-full bg-gray-100">
+                        <div id="map" class="h-full bg-gray-200 relative">
+                            <!-- Map will be rendered here by JavaScript -->
+                            <!-- Placeholder for design visualization -->
+                            <div class="map-placeholder flex items-center justify-center h-full">
+                                <p class="text-gray-400">Loading map...</p>
+                            </div>
+                            
+                            <!-- List/Map toggle -->
+                            <div class="absolute top-4 right-4 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                <button class="map-view-btn px-4 py-2 text-sm font-medium bg-black text-white">Map</button>
+                                <button class="list-view-btn px-4 py-2 text-sm font-medium">List</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom drawer with kiosk information -->
+                    <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-lg px-4 pt-4 pb-8 transform transition-transform duration-300">
+                        <div class="w-12 h-1 bg-gray-200 rounded mx-auto mb-4"></div>
+                        <div class="kiosk-list">
+                            <div class="kiosk-item flex items-center p-3 border border-gray-200 rounded-lg mb-3">
+                                <div class="mr-3 p-3 bg-gray-100 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <path d="M14 8a2 2 0 0 0-2-2"></path>
+                                        <path d="M16 8a4 4 0 0 0-4-4"></path>
+                                        <path d="M8.8 12a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                        <path d="M12.8 16a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                        <path d="M8.8 16a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-medium">Central Park Kiosk</h3>
+                                    <p class="text-sm text-gray-500">300m • Battery available</p>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Available</span>
+                                </div>
+                            </div>
+                            
+                            <div class="kiosk-item flex items-center p-3 border border-gray-200 rounded-lg mb-3">
+                                <div class="mr-3 p-3 bg-gray-100 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <path d="M14 8a2 2 0 0 0-2-2"></path>
+                                        <path d="M16 8a4 4 0 0 0-4-4"></path>
+                                        <path d="M8.8 12a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                        <path d="M12.8 16a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                        <path d="M8.8 16a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-medium">Downtown Mall Kiosk</h3>
+                                    <p class="text-sm text-gray-500">1.2km • All e-wastes available</p>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Almost Full</span>
+                                </div>
+                            </div>
+                            
+                            <div class="kiosk-item flex items-center p-3 border border-gray-200 rounded-lg">
+                                <div class="mr-3 p-3 bg-gray-100 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <path d="M14 8a2 2 0 0 0-2-2"></path>
+                                        <path d="M16 8a4 4 0 0 0-4-4"></path>
+                                        <path d="M8.8 12a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                        <path d="M12.8 16a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                        <path d="M8.8 16a1.2 1.2 0 1 0 2.4 0 1.2 1.2 0 1 0-2.4 0"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-medium">Community Center Kiosk</h3>
+                                    <p class="text-sm text-gray-500">1.8km • Laptops and electronic devices available</p>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Available</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Scanner Screen (initially hidden) -->
+            <div id="qr-scanner-screen" class="hidden h-full flex flex-col">
+                <div class="relative h-full">
+                    <!-- Camera viewfinder -->
+                    <div class="camera-view bg-black h-full flex items-center justify-center">
+                        <div class="qr-frame w-64 h-64 border-2 border-white rounded-lg relative">
+                            <div class="corner top-left absolute w-4 h-4 border-t-2 border-l-2 border-white top-0 left-0"></div>
+                            <div class="corner top-right absolute w-4 h-4 border-t-2 border-r-2 border-white top-0 right-0"></div>
+                            <div class="corner bottom-left absolute w-4 h-4 border-b-2 border-l-2 border-white bottom-0 left-0"></div>
+                            <div class="corner bottom-right absolute w-4 h-4 border-b-2 border-r-2 border-white bottom-0 right-0"></div>
+                            
+                            <div class="z-10 text-white text-center absolute bottom-0 left-0 right-0 mb-32">
+                                <p>Align QR code in the frame</p>
+                            </div>
+                            
+                            <!-- Scanning animation -->
+                            <div class="scan-line absolute left-0 right-0 h-0.5 bg-green-500"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom controls -->
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between items-center">
+                        <button id="back-from-scanner" class="text-white p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        <button class="text-white text-sm underline">
+                            Enter code manually
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rewards Screen (initially hidden) -->
+            <div id="rewards-screen" class="hidden h-full flex flex-col">
+                <div class="p-4 border-b border-gray-200 flex items-center">
+                    <button id="back-from-rewards" class="mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m15 18-6-6 6-6"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-lg font-medium">Rewards Catalog</h2>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-500 mb-4">Your Balance: 1,250 points</h3>
+                        
+                        <!-- Rewards Categories -->
+                        <div class="flex space-x-2 mb-4 overflow-x-auto pb-2">
+                            <button class="px-4 py-2 bg-black text-white text-sm rounded-full whitespace-nowrap">All Rewards</button>
+                            <button class="px-4 py-2 bg-white border border-gray-200 text-sm rounded-full whitespace-nowrap">Gift Cards</button>
+                            <button class="px-4 py-2 bg-white border border-gray-200 text-sm rounded-full whitespace-nowrap">Cash Out</button>
+                            <button class="px-4 py-2 bg-white border border-gray-200 text-sm rounded-full whitespace-nowrap">Eco Products</button>
+                        </div>
+                        
+                        <!-- Rewards Grid -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Reward Card 1 -->
+                            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="p-3 border-b border-gray-100">
+                                    <div class="bg-gray-50 rounded-lg h-24 flex items-center justify-center mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-medium text-sm">$5 Coffee Shop Card</h3>
+                                    <p class="text-xs text-gray-500">Any participating location</p>
+                                </div>
+                                <div class="px-3 py-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold">1,000 pts</span>
+                                        <button class="text-xs px-3 py-1 bg-black text-white rounded-full">Redeem</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reward Card 2 -->
+                            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="p-3 border-b border-gray-100">
+                                    <div class="bg-gray-50 rounded-lg h-24 flex items-center justify-center mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20.91 8.84 8.56 2.23a1.93 1.93 0 0 0-1.81 0L3.1 4.13a2.12 2.12 0 0 0-.05 3.69l12.22 6.93a2 2 0 0 0 1.94 0L21 12.51a2.12 2.12 0 0 0-.09-3.67Z"></path>
+                                            <path d="m3.09 8.84 12.35-6.61a1.93 1.93 0 0 1 1.81 0l3.65 1.9a2.12 2.12 0 0 1 .1 3.69L8.73 14.75a2 2 0 0 1-1.94 0L3 12.51a2.12 2.12 0 0 1 .09-3.67Z"></path>
+                                            <line x1="12" y1="22" x2="12" y2="13"></line>
+                                            <path d="M20 13.5v3.37a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13.5"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-medium text-sm">Ampol fuel voucher($10)</h3>
+                                    <p class="text-xs text-gray-500">Any Ampol Petrol Station</p>
+                                </div>
+                                <div class="px-3 py-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold">1,500 pts</span>
+                                        <button class="text-xs px-3 py-1 bg-gray-100 text-gray-500 rounded-full">Need 250 more</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reward Card 3 -->
+                            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="p-3 border-b border-gray-100">
+                                    <div class="bg-gray-50 rounded-lg h-24 flex items-center justify-center mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 9V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4"></path>
+                                            <path d="M2 12v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5"></path>
+                                            <path d="M2 12h20"></path>
+                                            <path d="M6 16v-4"></path>
+                                            <path d="M10 16v-4"></path>
+                                            <path d="M14 16v-4"></path>
+                                            <path d="M18 16v-4"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-medium text-sm">Cash Payout ($2)</h3>
+                                    <p class="text-xs text-gray-500">Direct to your bank account</p>
+                                </div>
+                                <div class="px-3 py-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold">1,500 pts</span>
+                                        <button class="text-xs px-3 py-1 bg-gray-100 text-gray-500 rounded-full">Need 250 more</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reward Card 4 -->
+                            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="p-3 border-b border-gray-100">
+                                    <div class="bg-gray-50 rounded-lg h-24 flex items-center justify-center mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="8"></circle>
+                                            <path d="M9.41 10.59a1 1 0 0 0-.02-1.34 1 1 0 0 0-1.35-.01 1 1 0 0 0-.01 1.35 1 1 0 0 0 1.38-.01 1 1 0 0 0 .01.01"></path>
+                                            <path d="M14.42 10.59a1 1 0 0 0-.03-1.34 1 1 0 0 0-1.34-.01 1 1 0 0 0-.01 1.35 1 1 0 0 0 1.38-.01 1 1 0 0 0 .01.01Z"></path>
+                                            <path d="M9.45 15.5a3 3 0 0 0 5.1 0"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-medium text-sm">Coles Voucher($5)</h3>
+                                    <p class="text-xs text-gray-500">Any Coles Store</p>
+                                </div>
+                                <div class="px-3 py-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold">1,500 pts</span>
+                                        <button class="text-xs px-3 py-1 bg-gray-100 text-gray-500 rounded-full">Need 250 more</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                <!-- Redeem Success Popup (initially hidden) -->
+                                <div id="redeem-success-popup" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                                        <div class="mb-4 flex justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                        </div>
+                                        <h2 class="text-xl font-bold mb-2">Redemption Successful</h2>
+                                        <p class="text-sm text-gray-500 mb-4">Your gift card will arrive in your email within 2 minutes.</p>
+                                        <button id="close-redeem-popup" class="bg-black text-white px-4 py-2 rounded-lg">Close</button>
+                                    </div>
+                                </div>
+
+            
+            <!-- Profile Screen (initially hidden) -->
+            <div id="profile-screen" class="hidden h-full flex flex-col">
+                <div class="p-4 border-b border-gray-200 flex items-center">
+                    <button id="back-from-profile" class="mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m15 18-6-6 6-6"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-lg font-medium">My Profile</h2>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto">
+                    <!-- User Profile Section -->
+                    <div class="p-4 flex items-center">
+                        <div class="w-16 h-16 bg-gray-200 rounded-full mr-4 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="font-medium">Alex Johnson</h2>
+                            <p class="text-sm text-gray-500">Joined February 2023</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Achievement Section -->
+                    <div class="px-4 py-3 border-t border-gray-100">
+                        <h3 class="text-sm font-medium mb-3">Achievements</h3>
+                        <div class="flex overflow-x-auto pb-2 space-x-4">
+                            <div class="flex flex-col items-center min-w-max">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs">First Recycle</span>
+                            </div>
+                            
+                            <div class="flex flex-col items-center min-w-max">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m8 3 4 8 5-5 5 15H2L8 3z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs">10 Visits</span>
+                            </div>
+                            
+                            <div class="flex flex-col items-center min-w-max">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs">Kiosk Explorer</span>
+                            </div>
+                            
+                            <div class="flex flex-col items-center min-w-max">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-1 opacity-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path>
+                                        <path d="M10 2c1 .5 2 2 2 5"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-400">Planet Saver</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Impact Stats -->
+                    <div class="px-4 py-3 border-t border-gray-100">
+                        <h3 class="text-sm font-medium mb-3">Your Impact</h3>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center">
+                                    <p class="text-gray-500 text-xs mb-1">Items Recycled</p>
+                                    <h3 class="text-2xl font-bold font-geist-mono">28</h3>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-gray-500 text-xs mb-1">CO₂ Saved</p>
+                                    <h3 class="text-2xl font-bold font-geist-mono">5.3 kg</h3>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-gray-500 text-xs mb-1">Points Earned</p>
+                                    <h3 class="text-2xl font-bold font-geist-mono">1,250</h3>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-gray-500 text-xs mb-1">Rewards Redeemed</p>
+                                    <h3 class="text-2xl font-bold font-geist-mono">2</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings -->
+                    <div class="px-4 py-3 border-t border-gray-100">
+                        <h3 class="text-sm font-medium mb-3">Settings</h3>
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="border-b border-gray-100">
+                                <button class="w-full py-3 px-4 flex justify-between items-center">
+                                    <span>Notification Preferences</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="border-b border-gray-100">
+                                <button class="w-full py-3 px-4 flex justify-between items-center">
+                                    <span>Connected Accounts</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="border-b border-gray-100">
+                                <button class="w-full py-3 px-4 flex justify-between items-center">
+                                    <span>Privacy Settings</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="w-full py-3 px-4 flex justify-between items-center">
+                                    <span>Help & Support</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="mt-4 text-red-600 w-full py-3 border border-gray-200 rounded-lg">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QR Success Screen (initially hidden) -->
+            <div id="QR-success-screen" class="hidden h-full flex flex-col">
+                <div class="flex-1 flex flex-col items-center justify-center p-6 bg-white">
+                    <div class="success-checkmark mb-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold mb-2">Scan Successful</h2>
+                    <p class="text-gray-500 mb-6 text-center">Let's Start Recycling!</p>
+                    
+                    <div class="w-full space-y-3">
+                        <button id="return-home-btn" class="bg-white border border-gray-200 w-full py-3 rounded-lg">Return to Home</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Button for Recycling (visible on home screen) -->
+        <div id="action-button" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 hidden">
+            <button id="main-action-btn" class="bg-black text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                </svg>
+            </button>
+            <!-- Action menu (initially hidden) -->
+            <div id="action-menu" class="hidden absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 w-48">
+                <button id="scan-qr-btn" class="w-full py-3 px-4 flex items-center text-left">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="8" y2="3"></line>
+                        <line x1="16" y1="21" x2="16" y2="3"></line>
+                        <line x1="3" y1="8" x2="21" y2="8"></line>
+                        <line x1="3" y1="16" x2="21" y2="16"></line>
+                    </svg>
+                    <span>Scan QR Code</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Bottom Nav (only visible after onboarding) -->
+        <nav id="bottom-nav" class="bg-white border-t border-gray-200 py-2 px-6 hidden">
+            <div class="flex justify-between items-center">
+                <button class="nav-btn active flex flex-col items-center py-1 px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span class="text-xs mt-1">Home</span>
+                </button>
+                
+                <button class="nav-btn flex flex-col items-center py-1 px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                    <span class="text-xs mt-1">Kiosks</span>
+                </button>
+                
+                <div class="w-12">
+                    <!-- Empty space for center button -->
+                </div>
+                
+                <button class="nav-btn flex flex-col items-center py-1 px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span class="text-xs mt-1">Rewards</span>
+                </button>
+                
+                <button class="nav-btn flex flex-col items-center py-1 px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span class="text-xs mt-1">Profile</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+<!--Map is here --> 
+    <div id="map" style="height: 100vh; width: 100%;"></div>
+
+    <!-- Required Scripts -->
+    <script src="app.js"></script>
+    <script src="mapController.js"></script>
+    <script src="qrScanner.js"></script>
+    <script src="animations.js"></script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDizPN1CeHQaZ-Zzxu8HDbHVwSRiPdld_0&callback=initMap"
+    async
+    defer
+    ></script>
+    <script>
+    document.getElementById("return-home-btn").addEventListener("click", function () {
+        document.getElementById("QR-success-screen").classList.add("hidden");
+        document.getElementById("home-screen").classList.remove("hidden");
+    });
+    </script>
+    <script>
+    // Show redeem success popup
+    document.querySelectorAll(".bg-black.text-white.rounded-full").forEach(button => {
+        button.addEventListener("click", () => {
+            document.getElementById("redeem-success-popup").classList.remove("hidden");
+        });
+    });
+
+    // Close popup
+    document.getElementById("close-redeem-popup").addEventListener("click", () => {
+        document.getElementById("redeem-success-popup").classList.add("hidden");
+    });
+    </script>
+
+</body>
+</html>
